@@ -1,8 +1,10 @@
-import numpy
+import numpy as np
 
 
 def tokenize(text, lowercase=True):
-    pass
+    if lowercase:
+        text = text.lower()
+    return text.split()
 
 
 def vectorize(text, word2idx, max_length):
@@ -17,4 +19,11 @@ def vectorize(text, word2idx, max_length):
     Returns: zero-padded list of ids
 
     """
-    pass
+    words = np.zeros(max_length, dtype=np.uint32)
+    for i, w in enumerate(text):
+        if text in word2idx:
+            words[i] = word2idx[w]
+        else:
+            words[i] = word2idx['<unk>']
+    return words
+

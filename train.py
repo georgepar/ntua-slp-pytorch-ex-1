@@ -4,15 +4,17 @@ from torch.utils.data import DataLoader
 
 from modules.dataloaders import SentenceDataset
 from utils.load_embeddings import load_word_vectors
+from utils.load_data import load_semeval2017A
 
 ########################################################
 # PARAMETERS
 ########################################################
 
-EMBEDDINGS = "../embeddings/glove.twitter.27B.50d.txt"
+EMBEDDINGS = "./embeddings/glove.twitter.27B.50d.txt"
 EMB_DIM = 50
 BATCH_SIZE = 128
 EPOCHS = 50
+MAX_LENGTH = 60
 
 ########################################################
 # Define the datasets/dataloaders
@@ -27,8 +29,10 @@ word2idx, idx2word, embeddings = load_word_vectors(EMBEDDINGS, EMB_DIM)
 # val = load_semeval2017A("datasets/Semeval2017A/gold")
 
 # 2 - define the datasets
-train_set = SentenceDataset...
-test_set = SentenceDataset...
+train_set = SentenceDataset("datasets/Semeval2017A/train_dev",
+                            word2idx, max_length=MAX_LENGTH)
+test_set = SentenceDataset("datasets/Semeval2017A/gold",
+                           word2idx, max_length=MAX_LENGTH)
 
 loader_train = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True)
 loader_test = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=True)

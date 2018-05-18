@@ -1,8 +1,11 @@
 from torch.utils.data import Dataset
 
+from utils.load_data import load_semeval2017A
+import utils.nlp as nlpu
+
 
 class SentenceDataset(Dataset):
-    def __init__(self):
+    def __init__(self, csv_file, word2idx, max_length=-1):
         """
         A PyTorch Dataset
         What we have to do is to implement the 2 abstract methods:
@@ -12,7 +15,17 @@ class SentenceDataset(Dataset):
             - __getitem__(self, index): we have to return the properly
                 processed data-item from our dataset with a given index
         """
-        pass
+        self.loaded_data = load_semeval2017A(csv_file)
+        self.word2idx = word2idx
+        self.max_length = max_length if max_length > 0 else self.__max_sentence_len()
+
+    def __max_sentence_len(self):
+        max_len = 0
+        for _, s in self.loaded_data:
+            slen = len(s)
+            if slen > max_len:
+                max_len = slen
+        return max_len
 
     def __len__(self):
         """
@@ -22,7 +35,7 @@ class SentenceDataset(Dataset):
         Returns:
             (int): the length of the dataset
         """
-        pass
+        return len(self.loaded_data)
 
     def __getitem__(self, index):
         """
@@ -50,4 +63,8 @@ class SentenceDataset(Dataset):
                              0     0     0     0     0     0     0     0]
                 label = 1
         """
-        pass
+        label, sentence = self.loaded_data[index]
+        tokenized = nlpu.tokenize(sentence)
+        vectorized = nlpu.vectorize(tokenized, self.word2idx, self.max_length)
+        return vectorized, label, len(sentence)
+
